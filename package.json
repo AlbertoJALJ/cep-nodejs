@@ -1,0 +1,19 @@
+{
+  "name": "cep-nodejs",
+  "version": "1.0.0",
+  "description": "Cliente Node.js para consultar transferencias SPEI en el portal CEP de Banxico",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node cep.js"
+  },
+  "keywords": ["spei", "banxico", "cep", "transferencias", "mexico"],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "@xmldom/xmldom": "^0.8.10"
+  }
+}
