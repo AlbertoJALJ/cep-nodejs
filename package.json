@@ -6,11 +6,38 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node cep.js"
+    "start": "node examples/ejemplo-completo.js",
+    "prepublishOnly": "pnpm test"
   },
-  "keywords": ["spei", "banxico", "cep", "transferencias", "mexico"],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "spei",
+    "banxico", 
+    "cep",
+    "transferencias",
+    "mexico",
+    "pagos",
+    "fintech",
+    "banking"
+  ],
+  "author": "Alberto Lopez <alberto.jalj971@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlbertoJALJ/cep-nodejs"
+  },
+  "homepage": "https://github.com/AlbertoJALJ/cep-nodejs#readme",
+  "bugs": {
+    "url": "https://github.com/AlbertoJALJ/cep-nodejs/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "files": [
+    "src/",
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ],
   "packageManager": "pnpm@10.10.0",
   "dependencies": {
     "node-fetch": "^3.3.2",
