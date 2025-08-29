@@ -3,15 +3,21 @@
   "version": "1.0.0",
   "description": "Cliente Node.js para consultar transferencias SPEI en el portal CEP de Banxico",
   "main": "index.js",
+  "types": "types/index.d.ts",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:types": "tsc --noEmit examples/ejemplo-typescript.ts",
     "start": "node examples/ejemplo-completo.js",
-    "prepublishOnly": "pnpm test"
+    "start:ts": "npx tsc examples/ejemplo-typescript.ts --outDir dist --target es2020 --module es2020 --moduleResolution node --esModuleInterop && node dist/ejemplo-typescript.js",
+    "compile:ts": "npx tsc examples/ejemplo-typescript.ts --outDir dist --target es2020 --module es2020 --moduleResolution node --esModuleInterop",
+    "prepublishOnly": "pnpm test && pnpm test:types"
   },
   "keywords": [
     "spei",
-    "banxico", 
+    "banxico",
     "cep",
     "transferencias",
     "mexico",
@@ -34,13 +40,20 @@
   },
   "files": [
     "src/",
+    "types/",
     "index.js",
     "README.md",
     "LICENSE"
   ],
   "packageManager": "pnpm@10.10.0",
   "dependencies": {
-    "node-fetch": "^3.3.2",
-    "@xmldom/xmldom": "^0.8.10"
+    "@xmldom/xmldom": "^0.8.10",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   }
 }

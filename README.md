@@ -13,7 +13,7 @@ Cliente Node.js profesional para consultar transferencias SPEI en el portal CEP 
 - ✅ **Cliente independiente** para PDF (sin conflictos)
 - ✅ **Datos estructurados** parseados automáticamente
 - ✅ **Manejo robusto de errores** específicos del CEP
-- ✅ **TypeScript ready** con JSDoc completo
+- ✅ **Soporte TypeScript completo** con tipos incluidos
 - ✅ **Cero dependencias pesadas** (solo 2 dependencias)
 
 ## 📦 Instalación
@@ -74,6 +74,35 @@ const xmlData = transferencia.getXmlData();
 // PDF requiere cliente independiente
 const pdfData = await transferencia.descargarPDF();
 
+```
+
+### Uso con TypeScript
+```typescript
+import { 
+    Transferencia, 
+    TransferenciaDict, 
+    Cuenta,
+    TransferNotFoundError 
+} from 'cep-banxico';
+
+// Tipos completamente tipados
+const transferencia: Transferencia = await Transferencia.validar(
+    new Date('2023-12-15'),
+    'TEST123456789',
+    'BBVA MEXICO',
+    'Banorte',
+    '000000001234567890',
+    100000,
+    false
+);
+
+// Datos tipados automáticamente
+const montoEnPesos: number = transferencia.montoPesos;
+const xmlData: Buffer | null = transferencia.getXmlData();
+const dict: TransferenciaDict = transferencia.toDict();
+
+// Cuenta con tipos
+const cuenta = new Cuenta('Juan Pérez', 'Cheques', 'BBVA', '123456789', 'RFC123456789');
 ```
 
 ### Manejo de errores

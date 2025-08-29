@@ -62,7 +62,7 @@ export class Transferencia {
 
     /**
      * Valida una transferencia SPEI con el portal CEP de Banxico y obtiene todos los datos
-     * @param {Date} fecha - Fecha de la transferencia
+     * @param {string} fecha - Fecha de la transferencia
      * @param {string} claveRastreo - Clave de rastreo
      * @param {string} emisor - Banco emisor
      * @param {string} receptor - Banco receptor
@@ -74,7 +74,6 @@ export class Transferencia {
     static async validar(fecha, claveRastreo, emisor, receptor, cuenta, monto, pagoABanco = false) {
         const client = await this._validar(fecha, claveRastreo, emisor, receptor, cuenta, monto, pagoABanco);
         
-        // Siempre descargar y parsear XML para obtener todos los datos
         const xmlData = await this._descargar(client, 'XML');
         const xmlString = xmlData.toString('utf-8');
 
@@ -108,6 +107,7 @@ export class Transferencia {
         const concepto = beneficiarioElement.getAttribute('Concepto');
         const sello = resp.getAttribute('sello');
         const montoInt = parseInt(cadenaCda[6]);
+        
 
         const transferencia = new Transferencia(
             fechaOperacion, fechaAbono, ordenante, beneficiario, 
@@ -207,6 +207,7 @@ export class Transferencia {
         }
 
         const client = new Client();
+
         const requestBody = {
             fecha: fecha,
             criterio: claveRastreo,
@@ -219,6 +220,7 @@ export class Transferencia {
 
         const resp = await client.post('/valida.do', requestBody);
         const decodedResp = resp.toString('utf-8');
+        console.log(decodedResp);
 
         if (decodedResp.includes(NO_CEP_ERROR_MESSAGE)) {
             throw new CepNotAvailableError();
