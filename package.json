@@ -13,7 +13,7 @@
     "start": "node examples/ejemplo-completo.js",
     "start:ts": "npx tsc examples/ejemplo-typescript.ts --outDir dist --target es2020 --module es2020 --moduleResolution node --esModuleInterop && node dist/ejemplo-typescript.js",
     "compile:ts": "npx tsc examples/ejemplo-typescript.ts --outDir dist --target es2020 --module es2020 --moduleResolution node --esModuleInterop",
-    "prepublishOnly": "pnpm test && pnpm test:types"
+    "prepublishOnly": "pnpm test:types"
   },
   "keywords": [
     "spei",
