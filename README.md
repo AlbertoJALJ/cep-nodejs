@@ -1,203 +1,243 @@
-# CEP Node.js
+# CEP Banxico
 
-Cliente Node.js para consultar transferencias SPEI en el portal CEP de Banxico.
+[![npm version](https://badge.fury.io/js/cep-banxico.svg)](https://badge.fury.io/js/cep-banxico)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
 
-## Descripción
+Cliente Node.js profesional para consultar transferencias SPEI en el portal CEP de Banxico.
 
-Este paquete replica completamente la funcionalidad del paquete de Python `cep-python`, permitiendo validar y descargar comprobantes de transferencias SPEI desde el portal CEP (Comprobante Electrónico de Pago) de Banxico.
+## 🚀 Características
 
-## Instalación
+- ✅ **Validación completa** de transferencias SPEI
+- ✅ **Descarga de comprobantes** en PDF y XML  
+- ✅ **Cliente independiente** para PDF (sin conflictos)
+- ✅ **Datos estructurados** parseados automáticamente
+- ✅ **Manejo robusto de errores** específicos del CEP
+- ✅ **TypeScript ready** con JSDoc completo
+- ✅ **Cero dependencias pesadas** (solo 2 dependencias)
+
+## 📦 Instalación
 
 ```bash
-pnpm install
+# Con pnpm (recomendado)
+pnpm add cep-banxico
+
+# Con npm
+npm install cep-banxico
+
+# Con yarn
+yarn add cep-banxico
 ```
 
-## Dependencias
-
-- `node-fetch`: Para realizar peticiones HTTP
-- `@xmldom/xmldom`: Para parsear respuestas XML
-- `clabe-validator`: Para validar códigos CLABE bancarios
-- `decimal.js`: Para manejo preciso de decimales
-
-## Uso
-
-### Importación
+## 🔧 Uso Rápido
 
 ```javascript
-import { Transferencia, configure, CepError } from './index.js';
-```
+import { Transferencia, configure } from 'cep-banxico';
 
-### Ejemplo básico
-
-```javascript
-import { Transferencia } from './index.js';
-
-async function validarTransferencia() {
-    try {
-        const fecha = new Date('2024-01-15');
-        const claveRastreo = 'EJEMPLO123456';
-        const emisor = 'BBVA BANCOMER';
-        const receptor = 'BANAMEX';
-        const cuenta = '1234567890';
-        const monto = 100000; // $1,000.00 en centavos
-
-        const transferencia = await Transferencia.validar(
-            fecha,
-            claveRastreo,
-            emisor,
-            receptor,
-            cuenta,
-            monto
-        );
-
-        console.log('Transferencia validada:', transferencia.toDict());
-
-        // Descargar el PDF del comprobante
-        const pdfBuffer = await transferencia.descargar('PDF');
-        
-        // Guardar en archivo
-        import { writeFileSync } from 'fs';
-        writeFileSync('comprobante.pdf', pdfBuffer);
-
-    } catch (error) {
-        console.error('Error:', error.message);
-    }
-}
-```
-
-### Configuración del entorno
-
-```javascript
-import { configure } from './index.js';
-
-// Para usar el entorno beta
-configure(true);
-
-// Para usar el entorno de producción (por defecto)
+// Configurar entorno (false = producción, true = beta)
 configure(false);
+
+// Validar transferencia (obtiene automáticamente todos los datos)
+const transferencia = await Transferencia.validar(
+    '12-08-2025',                    // fecha
+    'TEST12345678901234567890',      // clave de rastreo
+    'BBVA MEXICO',                   // banco emisor
+    'Mercado Pago W',                // banco receptor  
+    '000000001234567890',            // cuenta
+    25000                            // monto en centavos ($250.00)
+);
+
+// Datos disponibles inmediatamente
+console.log(transferencia.ordenante.nombre);   // "JOSE ALBERTO LOPEZ JIMENEZ"
+console.log(transferencia.beneficiario.nombre); // "Jose Alberto Lopez Jimenez"
+console.log(transferencia.montoPesos);          // 250.00
+console.log(transferencia.fechaOperacion);     // Date object
+
+// Descargar PDF (opcional - usa cliente independiente)  
+const pdfData = await transferencia.descargarPDF();
 ```
 
-### Manejo de excepciones
+## 🎯 Ejemplos Avanzados
 
+### Solo validación (sin descargas)
+```javascript
+const transferencia = await Transferencia.validar(fecha, claveRastreo, emisor, receptor, cuenta, monto);
+// Todos los datos están disponibles inmediatamente
+// XML incluido automáticamente, PDF opcional
+```
+
+### Descargar múltiples formatos
+```javascript
+// El XML ya está incluido
+const xmlData = transferencia.getXmlData();
+
+// PDF requiere cliente independiente
+const pdfData = await transferencia.descargarPDF();
+
+```
+
+### Manejo de errores
 ```javascript
 import { 
-    Transferencia, 
-    CepError,
     TransferNotFoundError,
     MaxRequestError,
-    CepNotAvailableError
-} from './index.js';
+    CepNotAvailableError,
+    CepError
+} from 'cep-banxico';
 
 try {
     const transferencia = await Transferencia.validar(/* parámetros */);
 } catch (error) {
     if (error instanceof TransferNotFoundError) {
-        console.log('No se encontró la transferencia');
+        console.log('Transferencia no encontrada');
     } else if (error instanceof MaxRequestError) {
-        console.log('Se excedió el límite de consultas');
+        console.log('Límite de consultas excedido');  
     } else if (error instanceof CepNotAvailableError) {
-        console.log('CEP no disponible para esta transferencia');
+        console.log('CEP no disponible');
     } else if (error instanceof CepError) {
         console.log('Error del sistema CEP:', error.message);
     }
 }
 ```
 
-## API
+## 📚 Referencia de API
 
-### Clase Transferencia
+### `Transferencia.validar()`
 
-#### Métodos estáticos
-
-- `Transferencia.validar(fecha, claveRastreo, emisor, receptor, cuenta, monto, pagoABanco = false)`
-  - Valida una transferencia con los datos proporcionados
-  - Retorna una instancia de `Transferencia` si es válida
-  - Lanza excepción si no se encuentra o hay errores
-
-#### Métodos de instancia
-
-- `descargar(formato = 'PDF')`
-  - Descarga el comprobante en el formato especificado
-  - Formatos disponibles: 'PDF', 'XML', 'ZIP'
-  - Retorna un `Buffer` con el contenido del archivo
-
-- `toDict()`
-  - Convierte la transferencia a un objeto plano
-  - Útil para serialización JSON
-
-#### Propiedades
-
-- `fechaOperacion`: Fecha de la operación
-- `fechaAbono`: Fecha y hora del abono
-- `ordenante`: Cuenta ordenante (instancia de `Cuenta`)
-- `beneficiario`: Cuenta beneficiario (instancia de `Cuenta`)
-- `monto`: Monto en centavos
-- `montoPesos`: Monto en pesos (getter)
-- `iva`: IVA como `Decimal`
-- `concepto`: Concepto de la transferencia
-- `claveRastreo`: Clave de rastreo
-- `emisor`: Banco emisor
-- `receptor`: Banco receptor
-- `sello`: Sello digital
-- `tipoPago`: Tipo de pago
-- `pagoABanco`: Booleano indicando si es pago a banco
-
-### Clase Cuenta
-
-Representa una cuenta bancaria con las siguientes propiedades:
-
-- `nombre`: Nombre del titular
-- `tipoCuenta`: Tipo de cuenta
-- `banco`: Nombre del banco
-- `numero`: Número de cuenta
-- `rfc`: RFC del titular
-
-### Excepciones
-
-- `CepError`: Error base del sistema CEP
-- `TransferNotFoundError`: Transferencia no encontrada
-- `MaxRequestError`: Límite de consultas excedido
-- `CepNotAvailableError`: CEP no disponible
-
-### Utilidades de bancos
+Método principal para validar y obtener datos de transferencias SPEI.
 
 ```javascript
-import { BANKS, isValidBankName, getBankName } from './index.js';
+static async validar(fecha, claveRastreo, emisor, receptor, cuenta, monto, pagoABanco = false)
+```
 
-// Verificar si un banco es válido
-console.log(isValidBankName('BBVA BANCOMER')); // true
+**Parámetros:**
+- `fecha` (string): Fecha en formato DD-MM-YYYY
+- `claveRastreo` (string): Clave de rastreo de la transferencia
+- `emisor` (string): Nombre del banco emisor
+- `receptor` (string): Nombre del banco receptor  
+- `cuenta` (string): Número de cuenta del beneficiario
+- `monto` (number): Monto en centavos (ej: 25000 = $250.00)
+- `pagoABanco` (boolean, opcional): Si es pago a banco
 
-// Obtener nombre por código
-console.log(getBankName('012')); // 'BBVA BANCOMER'
+**Retorna:** `Promise<Transferencia>` - Instancia con todos los datos parseados
 
-// Ver todos los bancos disponibles
+**Lanza:** `TransferNotFoundError`, `MaxRequestError`, `CepNotAvailableError`, `CepError`
+
+### `transferencia.descargarPDF()`
+
+Descarga el comprobante PDF usando cliente independiente.
+
+```javascript
+async descargarPDF()
+```
+
+**Retorna:** `Promise<Buffer>` - Datos del archivo PDF
+
+### Propiedades de Transferencia
+
+```javascript
+transferencia.fechaOperacion     // Date - Fecha de la operación
+transferencia.fechaAbono         // Date - Fecha y hora del abono
+transferencia.ordenante          // Cuenta - Cuenta ordenante
+transferencia.beneficiario       // Cuenta - Cuenta beneficiario
+transferencia.monto              // number - Monto en centavos
+transferencia.montoPesos         // number - Monto en pesos (getter)
+transferencia.iva                // number - IVA
+transferencia.concepto           // string - Concepto 
+transferencia.claveRastreo       // string - Clave de rastreo
+transferencia.emisor             // string - Banco emisor
+transferencia.receptor           // string - Banco receptor
+transferencia.sello              // string - Sello digital
+transferencia.tipoPago           // number - Tipo de pago
+```
+
+### Clase `Cuenta`
+
+```javascript
+cuenta.nombre        // string - Nombre del titular
+cuenta.banco         // string - Nombre del banco
+cuenta.numero        // string - Número de cuenta
+cuenta.rfc           // string - RFC del titular
+cuenta.tipoCuenta    // string - Tipo de cuenta
+```
+
+### Utilidades
+
+```javascript
+import { BANKS, isValidBankName } from 'cep-banxico';
+
+// Validar nombre de banco
+isValidBankName('BBVA MEXICO')  // true
+
+// Ver todos los bancos SPEI
 console.log(BANKS);
 ```
 
-## Estructura del proyecto
+## ⚠️ Consideraciones Importantes
+
+### Límites del Portal CEP
+- **Consultas por día**: Banxico limita el número de consultas diarias
+- **Rate limiting**: Evita hacer consultas masivas consecutivas
+- **Datos reales**: Solo funciona con transferencias SPEI reales
+
+### Arquitectura del Cliente
+- **XML automático**: Siempre se descarga y parsea automáticamente
+- **PDF independiente**: Usa cliente separado para evitar conflictos
+- **Datos inmediatos**: Todos los datos estructurados disponibles tras validar
+
+### Formatos Soportados
+- **PDF**: Comprobante visual para impresión
+- **XML**: Datos estructurados originales del CEP
+- **ZIP**: Archivo comprimido con múltiples formatos
+
+## 🔧 Desarrollo
+
+```bash
+# Clonar repositorio
+git clone https://github.com:AlbertoJALJ/cep-nodejs.git
+cd cep-nodejs
+
+# Instalar dependencias
+pnpm install
+
+# Ejecutar ejemplo
+pnpm start
+```
+
+## 📁 Estructura del Proyecto
 
 ```
-cep/
+cep-nodejs/
 ├── src/
-│   ├── transferencia.js    # Clase principal Transferencia
-│   ├── client.js          # Cliente HTTP para API de Banxico
-│   ├── cuenta.js          # Clase Cuenta
-│   ├── exceptions.js      # Excepciones personalizadas
-│   └── banks.js          # Catálogo de bancos CLABE
+│   ├── transferencia.js    # Clase principal
+│   ├── client.js          # Cliente HTTP
+│   ├── cuenta.js          # Modelo de cuenta
+│   ├── exceptions.js      # Errores específicos
+│   └── banks.js          # Catálogo SPEI
 ├── examples/
-│   └── ejemplo-basico.js  # Ejemplo de uso
-├── index.js              # Punto de entrada principal
+│   └── ejemplo-completo.js # Ejemplo funcional
+├── index.js              # Punto de entrada
 ├── package.json
-└── README.md
+├── README.md
+└── LICENSE
 ```
 
-## Notas importantes
+## 🤝 Contribuir
 
-1. **Límites de uso**: El portal CEP de Banxico tiene límites en el número de consultas por día
-2. **Formatos de descarga**: Los archivos PDF, XML y ZIP contienen la misma información pero en diferentes formatos
-3. **Validación de bancos**: Se utiliza el catálogo oficial de bancos participantes en SPEI
-4. **Manejo de fechas**: Las fechas deben ser objetos `Date` de JavaScript
+Las contribuciones son bienvenidas. Para cambios importantes:
 
-## Licencia
+1. Fork el proyecto
+2. Crea una rama feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
 
-ISC
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+
+## 🙏 Reconocimientos
+
+- Inspirado en el paquete Python `cep-python`
+- Portal CEP de Banxico por la funcionalidad oficial
+- Comunidad Node.js por las herramientas de desarrollo

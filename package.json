@@ -1,5 +1,5 @@
 {
-  "name": "cep-nodejs",
+  "name": "cep-banxico",
   "version": "1.0.0",
   "description": "Cliente Node.js para consultar transferencias SPEI en el portal CEP de Banxico",
   "main": "index.js",
