@@ -7,7 +7,12 @@ export {
     CepNotAvailableError 
 } from './exceptions';
 export { Transferencia, TransferenciaDict } from './transferencia';
-export { isValidBankName } from './banks';
+export { 
+    BANKS, 
+    isValidBankCode, 
+    getBankName, 
+    isValidBankName 
+} from './banks';
 
 // Configuración del paquete
 export declare function configure(beta?: boolean): void;

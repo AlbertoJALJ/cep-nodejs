@@ -4,11 +4,27 @@ import {
     TransferNotFoundError,
     MaxRequestError,
     CepNotAvailableError,
+    BANKS,
+    isValidBankCode,
+    getBankName,
+    isValidBankName
 } from '../index.js';
 import { writeFileSync } from 'fs';
 
 
+function ejemploBancos() {
+    console.log('Ejemplo de uso del catálogo BANKS:');
+    
+    // Validar códigos
+    console.log(`Código 40002 válido: ${isValidBankCode('40002')} (${getBankName('40002')})`);
+    console.log(`Nombre "BANAMEX" válido: ${isValidBankName('BANAMEX')}`);
+    console.log(`Total bancos: ${Object.keys(BANKS).length}`);
+}
+
 async function ejemploCompleto() {
+    // Mostrar ejemplos de bancos primero
+    ejemploBancos();
+    
     configure(false);
     
     try {
@@ -18,8 +34,11 @@ async function ejemploCompleto() {
         const receptor = 'Mercado Pago W';
         const cuenta = '000000001234567890';
         const monto = 25000; // $250.00 en centavos
+        
+        // Validar bancos antes de la transferencia
+        console.log(`Validando bancos - Emisor: ${isValidBankName(emisor)}, Receptor: ${isValidBankName(receptor)}`);
 
-        // Validar transferencia (automáticamente obtiene todos los datos del XML)
+        // Validar transferencia
         console.log(`Validando transferencia de $${monto / 100} MXN...`);
         
         const transferencia = await Transferencia.validar(

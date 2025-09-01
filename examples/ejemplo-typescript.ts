@@ -10,18 +10,44 @@ import {
     TransferNotFoundError,
     MaxRequestError,
     CepNotAvailableError,
-    CepError
+    CepError,
+    BANKS,
+    isValidBankCode,
+    getBankName,
+    isValidBankName
 } from '../index.js';
 import { writeFileSync } from 'fs';
 
+function ejemploBancos(): void {
+    console.log('Ejemplo de uso del catálogo BANKS (TypeScript):');
+    
+    // Validar códigos con tipos explícitos
+    const codigoValido: string = '40002';
+    const esValidoCodigo: boolean = isValidBankCode(codigoValido);
+    const nombreBanco: string | null = getBankName(codigoValido);
+    console.log(`Código ${codigoValido} válido: ${esValidoCodigo} (${nombreBanco})`);
+    
+    // Validar nombres con tipos
+    const nombreValido: string = 'BANAMEX';
+    const esValidoNombre: boolean = isValidBankName(nombreValido);
+    console.log(`Nombre "${nombreValido}" válido: ${esValidoNombre}`);
+    
+    // Estadísticas tipadas
+    const totalBancos: number = Object.keys(BANKS).length;
+    console.log(`Total bancos: ${totalBancos}`);
+}
+
 async function ejemploCompleto(): Promise<void> {
     try {
+        // Mostrar ejemplos de bancos primero
+        ejemploBancos();
+        
         // Configurar entorno (false = producción, true = beta)
         configure(false);
 
-        console.log('🔍 Validando transferencia SPEI...');
+        console.log('Validando transferencia SPEI...');
 
-        // Parámetros de prueba
+        // Parámetros de prueba con tipos explícitos
         const fecha: string = '12-08-2025';
         const claveRastreo: string = 'TEST12345678901234567890';
         const emisor: string = 'BBVA MEXICO';
@@ -29,6 +55,11 @@ async function ejemploCompleto(): Promise<void> {
         const cuenta: string = '000000001234567890';
         const monto: number = 25000; // $250.00 en centavos
         const pagoABanco: boolean = false;
+        
+        // Validar bancos antes de la transferencia (con tipos)
+        const emisorValido: boolean = isValidBankName(emisor);
+        const receptorValido: boolean = isValidBankName(receptor);
+        console.log(`Validando bancos - Emisor: ${emisorValido}, Receptor: ${receptorValido}`);
         
         const transferencia: Transferencia = await Transferencia.validar(
             fecha,
@@ -139,7 +170,7 @@ function ejemploCuentas(): void {
 }
 
 // Exportar funciones para uso externo
-export { ejemploCompleto, ejemploCuentas };
+export { ejemploCompleto, ejemploCuentas, ejemploBancos };
 
 // Ejecutar ejemplo automáticamente
 ejemploCompleto()
