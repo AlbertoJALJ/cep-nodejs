@@ -7,7 +7,7 @@ import {
     MaxRequestError,
     TransferNotFoundError
 } from './exceptions.js';
-import { isValidBankName } from './banks.js';
+import { isValidBankCode, isValidBankName } from './banks.js';
 
 const MAX_REQUEST_ERROR_MESSAGE = 'Lo sentimos, pero ha excedido el número máximo de consultas en este portal';
 const NO_PAYMENT_ERROR_MESSAGE = 'No se encontró ningún pago con la información proporcionada';
@@ -199,10 +199,10 @@ export class Transferencia {
      * @private
      */
     static async _validar(fecha, claveRastreo, emisor, receptor, cuenta, monto, pagoABanco = false) {
-        if (!isValidBankName(emisor)) {
+        if (!isValidBankCode(emisor)) {
             throw new Error(`Banco emisor inválido: ${emisor}`);
         }
-        if (!isValidBankName(receptor)) {
+        if (!isValidBankCode(receptor)) {
             throw new Error(`Banco receptor inválido: ${receptor}`);
         }
 
@@ -211,8 +211,8 @@ export class Transferencia {
         const requestBody = {
             fecha: fecha,
             criterio: claveRastreo,
-            emisor: 40012,
-            receptor: 90722,
+            emisor: emisor,
+            receptor: receptor,
             cuenta: cuenta,
             monto: this._formatMonto(monto),
             receptorParticipante: 0

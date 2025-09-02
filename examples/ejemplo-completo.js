@@ -30,13 +30,13 @@ async function ejemploCompleto() {
     try {
         const fecha = '12-08-2025'
         const claveRastreo = 'TEST12345678901234567890';
-        const emisor = 'BBVA MEXICO';
-        const receptor = 'Mercado Pago W';
+        const emisor = '40012'; // BBVA MEXICO
+        const receptor = '90722'; // Mercado Pago W
         const cuenta = '000000001234567890';
         const monto = 25000; // $250.00 en centavos
         
-        // Validar bancos antes de la transferencia
-        console.log(`Validando bancos - Emisor: ${isValidBankName(emisor)}, Receptor: ${isValidBankName(receptor)}`);
+        // Validar códigos de banco antes de la transferencia
+        console.log(`Validando códigos - Emisor: ${isValidBankCode(emisor)} (${getBankName(emisor)}), Receptor: ${isValidBankCode(receptor)} (${getBankName(receptor)})`);
 
         // Validar transferencia
         console.log(`Validando transferencia de $${monto / 100} MXN...`);

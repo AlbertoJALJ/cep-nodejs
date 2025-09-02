@@ -41,8 +41,8 @@ configure(false);
 const transferencia = await Transferencia.validar(
     '12-08-2025',                    // fecha
     'TEST12345678901234567890',      // clave de rastreo
-    'BBVA MEXICO',                   // banco emisor
-    'Mercado Pago W',                // banco receptor  
+    '40012',                         // código banco emisor (BBVA MEXICO)
+    '90722',                         // código banco receptor (Mercado Pago W)  
     '000000001234567890',            // cuenta
     25000                            // monto en centavos ($250.00)
 );
@@ -89,8 +89,8 @@ import {
 const transferencia: Transferencia = await Transferencia.validar(
     new Date('2023-12-15'),
     'TEST123456789',
-    'BBVA MEXICO',
-    'Banorte',
+    '40012',                         // BBVA MEXICO
+    '40072',                         // Banorte
     '000000001234567890',
     100000,
     false
@@ -142,8 +142,8 @@ static async validar(fecha, claveRastreo, emisor, receptor, cuenta, monto, pagoA
 **Parámetros:**
 - `fecha` (string): Fecha en formato DD-MM-YYYY
 - `claveRastreo` (string): Clave de rastreo de la transferencia
-- `emisor` (string): Nombre del banco emisor
-- `receptor` (string): Nombre del banco receptor  
+- `emisor` (string): Código del banco emisor (ej: '40012' para BBVA)
+- `receptor` (string): Código del banco receptor (ej: '90722' para Mercado Pago)  
 - `cuenta` (string): Número de cuenta del beneficiario
 - `monto` (number): Monto en centavos (ej: 25000 = $250.00)
 - `pagoABanco` (boolean, opcional): Si es pago a banco
@@ -193,10 +193,13 @@ cuenta.tipoCuenta    // string - Tipo de cuenta
 ### Utilidades
 
 ```javascript
-import { BANKS, isValidBankName } from 'cep-banxico';
+import { BANKS, isValidBankCode, getBankName } from 'cep-banxico';
 
-// Validar nombre de banco
-isValidBankName('BBVA MEXICO')  // true
+// Validar código de banco
+isValidBankCode('40012')  // true
+
+// Obtener nombre por código
+getBankName('40012')  // 'BBVA MEXICO'
 
 // Ver todos los bancos SPEI
 console.log(BANKS);

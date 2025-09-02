@@ -50,16 +50,16 @@ async function ejemploCompleto(): Promise<void> {
         // Parámetros de prueba con tipos explícitos
         const fecha: string = '12-08-2025';
         const claveRastreo: string = 'TEST12345678901234567890';
-        const emisor: string = 'BBVA MEXICO';
-        const receptor: string = 'Mercado Pago W';
+        const emisor: string = '40012'; // BBVA MEXICO
+        const receptor: string = '90722'; // Mercado Pago W
         const cuenta: string = '000000001234567890';
         const monto: number = 25000; // $250.00 en centavos
         const pagoABanco: boolean = false;
         
-        // Validar bancos antes de la transferencia (con tipos)
-        const emisorValido: boolean = isValidBankName(emisor);
-        const receptorValido: boolean = isValidBankName(receptor);
-        console.log(`Validando bancos - Emisor: ${emisorValido}, Receptor: ${receptorValido}`);
+        // Validar códigos de banco antes de la transferencia (con tipos)
+        const emisorValido: boolean = isValidBankCode(emisor);
+        const receptorValido: boolean = isValidBankCode(receptor);
+        console.log(`Validando códigos - Emisor: ${emisorValido} (${getBankName(emisor)}), Receptor: ${receptorValido} (${getBankName(receptor)})`);
         
         const transferencia: Transferencia = await Transferencia.validar(
             fecha,
