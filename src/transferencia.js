@@ -41,7 +41,7 @@ export class Transferencia {
      * @returns {number} Monto en pesos
      */
     get montoPesos() {
-        return this.monto / 100;
+        return this.monto;
     }
 
     /**
@@ -99,6 +99,7 @@ export class Transferencia {
         const ordenante = Cuenta.fromXmlElement(ordenanteElement);
         const beneficiario = Cuenta.fromXmlElement(beneficiarioElement);
         const cadenaCda = resp.getAttribute('cadenaCDA').split('|');
+        const numeroCertificado = resp.getAttribute('numeroCertificado');
         const fechaAbonoStr = cadenaCda[4] + cadenaCda[5];
         const fechaAbono = this._parseFechaAbono(fechaAbonoStr);
         const tipoPago = parseInt(cadenaCda[2]);
@@ -106,13 +107,13 @@ export class Transferencia {
         const iva = parseFloat(beneficiarioElement.getAttribute('IVA'));
         const concepto = beneficiarioElement.getAttribute('Concepto');
         const sello = resp.getAttribute('sello');
-        const montoInt = parseInt(cadenaCda[6]);
+        const montoInt = beneficiarioElement.getAttribute('MontoPago');
         
 
         const transferencia = new Transferencia(
             fechaOperacion, fechaAbono, ordenante, beneficiario, 
             montoInt, iva, concepto, claveRastreo, emisor, receptor, 
-            sello, tipoPago, pagoABanco, xmlData, null
+            sello, tipoPago, pagoABanco, xmlData, null, numeroCertificado
         );
         
         // Guardar datos de validación para posible descarga de PDF
@@ -220,7 +221,6 @@ export class Transferencia {
 
         const resp = await client.post('/valida.do', requestBody);
         const decodedResp = resp.toString('utf-8');
-        console.log(decodedResp);
 
         if (decodedResp.includes(NO_CEP_ERROR_MESSAGE)) {
             throw new CepNotAvailableError();
