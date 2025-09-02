@@ -17,7 +17,7 @@ const NO_CEP_ERROR_MESSAGE = 'Con la información proporcionada se identificó e
 export class Transferencia {
 
     constructor(fechaOperacion, fechaAbono, ordenante, beneficiario, monto, iva,
-        concepto, claveRastreo, emisor, receptor, sello, tipoPago, pagoABanco = false, xmlData = null, pdfData = null) {
+        concepto, claveRastreo, emisor, receptor, sello, tipoPago, pagoABanco = false, xmlData = null, pdfData = null, numeroCertificado = null, cadenaCda = null) {
         this.fechaOperacion = fechaOperacion;
         this.fechaAbono = fechaAbono;
         this.ordenante = ordenante;
@@ -33,6 +33,8 @@ export class Transferencia {
         this.pagoABanco = pagoABanco;
         this.xmlData = xmlData;
         this.pdfData = pdfData;
+        this.numeroCertificado = numeroCertificado;
+        this.cadenaCda = cadenaCda;
         this._client = null;
     }
 
@@ -113,7 +115,7 @@ export class Transferencia {
         const transferencia = new Transferencia(
             fechaOperacion, fechaAbono, ordenante, beneficiario, 
             montoInt, iva, concepto, claveRastreo, emisor, receptor, 
-            sello, tipoPago, pagoABanco, xmlData, null, numeroCertificado
+            sello, tipoPago, pagoABanco, xmlData, null, numeroCertificado, cadenaCda
         );
         
         // Guardar datos de validación para posible descarga de PDF

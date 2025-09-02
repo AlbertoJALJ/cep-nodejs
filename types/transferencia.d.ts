@@ -34,6 +34,8 @@ export declare class Transferencia {
     pagoABanco: boolean;
     xmlData: Buffer | null;
     pdfData: Buffer | null;
+    numeroCertificado: string | null;
+    cadenaCda: string[] | null;
     private _client: Client | null;
     private _validacionData: any;
 
@@ -52,7 +54,9 @@ export declare class Transferencia {
         tipoPago?: number | null,
         pagoABanco?: boolean,
         xmlData?: Buffer | null,
-        pdfData?: Buffer | null
+        pdfData?: Buffer | null,
+        numeroCertificado?: string | null,
+        cadenaCda?: string[] | null
     );
 
     /**
